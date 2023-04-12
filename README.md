@@ -1,5 +1,15 @@
 # default
 
+# Pre-required
+
+npm >= 16.5.0
+
+## Using Pinia-ORM
+
+```
+yarn add Pinia-ORM
+```
+
 ## Project setup
 
 ```

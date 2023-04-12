@@ -9,12 +9,17 @@
   },
   "dependencies": {
     "@mdi/font": "7.0.96",
+    "@vee-validate/rules": "^4.8.4",
+    "axios": "^1.3.5",
     "pinia": "^2.0.23",
+    "pinia-orm": "^1.6.7",
     "roboto-fontface": "*",
+    "vee-validate": "^4.5.8",
     "vue": "^3.2.38",
     "vue-router": "^4.0.0",
     "vuetify": "^3.0.0",
-    "webfontloader": "^1.0.0"
+    "webfontloader": "^1.0.0",
+    "yup": "^1.0.2"
   },
   "devDependencies": {
     "@types/node": "^18.11.9",

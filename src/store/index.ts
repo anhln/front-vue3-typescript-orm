@@ -1,4 +1,7 @@
 // Utilities
-import { createPinia } from 'pinia'
+import { createPinia } from "pinia";
+import { createORM } from "pinia-orm";
 
-export default createPinia()
+const pinia = createPinia().use(createORM());
+
+export default pinia;

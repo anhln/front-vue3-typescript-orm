@@ -5,7 +5,7 @@
       style="height: 100%; width: 100%"
     >
       <v-card class="card-container">
-        <v-form>
+        <form @submit.prevent="submit">
           <div class="title">
             <h3>Log in to your account</h3>
           </div>
@@ -15,46 +15,94 @@
             label="User Name"
             variant="outlined"
             prepend-inner-icon="mdi-account"
+            :error-messages="name.errorMessage.value"
+            v-model="name.value.value"
           ></v-text-field>
           <v-text-field
+            class="user-name"
             label="Password"
             placeholder="Password"
+            hint="Enter your password to access this website"
             :type="visiblePassword ? 'input' : 'password'"
             variant="outlined"
             prepend-inner-icon="mdi-lock"
             :append-inner-icon="visiblePassword ? 'mdi-eye' : 'mdi-eye-off'"
             @click:appendInner="changeViewPassword"
+            :error-messages="password.errorMessage.value"
+            v-model="password.value.value"
           ></v-text-field>
-          <v-btn class="btn-login" block @click="login">Log In</v-btn>
-          <v-card-actions></v-card-actions>
+          <v-btn class="btn-login" block type="submit">Log In</v-btn>
           <div class="panel-footer">
             <v-row>
               <span>Forgot Password</span>
               <v-spacer></v-spacer><span>Sign Up</span>
             </v-row>
           </div>
-        </v-form>
+        </form>
       </v-card>
     </v-row>
   </v-container>
 </template>
 <script lang="ts">
-  import { defineComponent } from "vue";
+  import { defineComponent, ref } from "vue";
+  import { useRouter } from "vue-router";
+  // import * as Yup from "yup";
+  import { configure, defineRule, useField, useForm } from "vee-validate";
+  // import { required, email } from "@vee-validate/rules";
+
+  // defineRule("required", required);
+
+  // configure({
+  //   validateOnInput: true,
+  // });
 
   export default defineComponent({
-    data() {
+    setup(props, context) {
+      const router = useRouter();
+      const visiblePassword = ref(false);
+
+      const { handleSubmit, handleReset } = useForm({
+        validationSchema: {
+          name(value) {
+            if (value?.length >= 2) return true;
+            return "Name needs to be at least 2 characters.";
+          },
+          password(value) {
+            if (value?.length >= 2) return true;
+            return "Name needs to be at least 2 characters.";
+          },
+        },
+      });
+      const name = useField("name");
+      const password = useField("password");
+
+      const changeViewPassword = () => {
+        visiblePassword.value = !visiblePassword.value;
+      };
+
+      function login() {
+        router.push("/profile");
+      }
+
+      const submit = handleSubmit((values) => {
+        alert(JSON.stringify(values, null, 2));
+        router.push("/profile");
+      });
+
       return {
-        visiblePassword: false,
+        visiblePassword,
+        name,
+        password,
+        // emailError,
+        // passwordRules,
+        // onSubmit,
+        changeViewPassword,
+        login,
+        submit,
       };
     },
-    methods: {
-      changeViewPassword() {
-        this.visiblePassword = !this.visiblePassword;
-      },
-      login() {
-        this.$router.push("/profile");
-      },
-    },
+
+    methods: {},
   });
 </script>
 <style lang="scss" scoped>
@@ -84,10 +132,11 @@
       .btn-login {
         background-color: #60467e;
         color: white;
-        height: 40px;
+        min-height: 56px;
         text-transform: none;
         font-size: 18px;
         font-weight: 500;
+        margin-bottom: 24px;
       }
       .bottom {
         padding: 16px 12px;
@@ -115,7 +164,14 @@
       }
     }
     .user-name {
-      min-width: 350px;
+      min-width: 375px;
+      margin-bottom: 12px;
+      &::v-deep .v-field__prepend-inner .v-icon {
+        margin-right: 12px;
+      }
+      &::v-deep .v-field__append-inner .v-icon {
+        margin-left: 12px;
+      }
     }
   }
 </style>
