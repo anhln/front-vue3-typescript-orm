@@ -1,5 +1,5 @@
 # default
-
+This is a template with Vue 3 and Vuetify 3 using Pinia to store the states of app. It includes login form and profile information page.
 # Pre-required
 
 npm >= 16.5.0

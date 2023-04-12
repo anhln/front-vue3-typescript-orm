@@ -1,10 +1,10 @@
 import axios from "axios";
 
-const api = axios.create({
-  baseURL: "/api",
+const axiosInstance = axios.create({
+  baseURL: "http://localhost:8000/dj-rest-auth",
 });
 
-api.interceptors.request.use(
+axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -17,4 +17,4 @@ api.interceptors.request.use(
   }
 );
 
-export default api;
+export default axiosInstance;

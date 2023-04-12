@@ -15,8 +15,8 @@
             label="User Name"
             variant="outlined"
             prepend-inner-icon="mdi-account"
-            :error-messages="name.errorMessage.value"
-            v-model="name.value.value"
+            :error-messages="username.errorMessage.value"
+            v-model="username.value.value"
           ></v-text-field>
           <v-text-field
             class="user-name"
@@ -46,34 +46,29 @@
 <script lang="ts">
   import { defineComponent, ref } from "vue";
   import { useRouter } from "vue-router";
-  // import * as Yup from "yup";
-  import { configure, defineRule, useField, useForm } from "vee-validate";
-  // import { required, email } from "@vee-validate/rules";
-
-  // defineRule("required", required);
-
-  // configure({
-  //   validateOnInput: true,
-  // });
+  import { useField, useForm } from "vee-validate";
+  import { useUserStore } from "@/store/user";
 
   export default defineComponent({
-    setup(props, context) {
+    name: "LoginForm",
+    setup() {
+      const userStore = useUserStore();
       const router = useRouter();
       const visiblePassword = ref(false);
 
-      const { handleSubmit, handleReset } = useForm({
+      const { handleSubmit } = useForm({
         validationSchema: {
-          name(value) {
+          username(value) {
             if (value?.length >= 2) return true;
             return "Name needs to be at least 2 characters.";
           },
           password(value) {
             if (value?.length >= 2) return true;
-            return "Name needs to be at least 2 characters.";
+            return "Password needs to be at least 2 characters.";
           },
         },
       });
-      const name = useField("name");
+      const username = useField("username");
       const password = useField("password");
 
       const changeViewPassword = () => {
@@ -84,25 +79,21 @@
         router.push("/profile");
       }
 
-      const submit = handleSubmit((values) => {
-        alert(JSON.stringify(values, null, 2));
-        router.push("/profile");
+      const submit = handleSubmit(async () => {
+        const response = await userStore.login(username.value, password.value);
+        // if()router.push("/profile");
+        console.log(JSON.stringify(response));
       });
 
       return {
         visiblePassword,
-        name,
+        username,
         password,
-        // emailError,
-        // passwordRules,
-        // onSubmit,
         changeViewPassword,
         login,
         submit,
       };
     },
-
-    methods: {},
   });
 </script>
 <style lang="scss" scoped>

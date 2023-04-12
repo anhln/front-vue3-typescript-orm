@@ -1,6 +1,7 @@
 // Utilities
 import { defineStore } from "pinia";
-import axios from "axios";
+// import axios, { AxiosError } from "axios";
+import axiosInstance from  "@/api/index";
 
 interface User {
   email: string;
@@ -8,39 +9,38 @@ interface User {
 }
 
 interface UserState {
-  loggedIn: boolean;
-  email: string | null;
-  name: string | null;
+  user: User | null,
+  error: string | null;
 }
 
-export const useAppStore = defineStore({
+export const useUserStore = defineStore({
   id: "user",
   state: (): UserState => ({
-    loggedIn: false,
-    email: null,
-    name: null,
+    user: null,
+    error: null
   }),
   actions: {
     async login(email: string, password: string): Promise<void> {
+      console.log(email.value, password.value);
       try {
-        const response = await axios.post("/api/login", {
-          email: email,
-          password: password,
+        const response = await axiosInstance.post<{user: User}>("/login/", {
+          username: email.value,
+          password: password.value,
         });
 
         const userData = response.data;
-        this.loggedIn = true;
-        this.email = userData.email;
-        this.name = userData.name;
-      } catch (error: any) {
-        console.log(error.message);
+        this.user = userData.user;
+        this.error = null;
+      } catch (error: unknown) {
+       
+        console.log(error.message)
+        this.user = null
       }
     },
     
     logout(): void {
-      this.loggedIn = false;
-      this.email = null;
-      this.name = null;
+      this.user = null
+      this.error = null
     },
   },
 });
