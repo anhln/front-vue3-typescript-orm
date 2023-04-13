@@ -48,6 +48,7 @@ router.beforeEach((to, from, next) => {
       next("/login");
     } else {
       userStore.user = JSON.parse(localStorage.getItem("user"));
+      next();
     }
   } else {
     next();
