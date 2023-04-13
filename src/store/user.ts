@@ -1,7 +1,7 @@
 // Utilities
 import { defineStore } from "pinia";
 // import axios, { AxiosError } from "axios";
-import axiosInstance from  "@/api/index";
+import axiosInstance from "@/api/index";
 
 interface User {
   email: string;
@@ -9,7 +9,7 @@ interface User {
 }
 
 interface UserState {
-  user: User | null,
+  user: User | null;
   error: string | null;
 }
 
@@ -17,30 +17,45 @@ export const useUserStore = defineStore({
   id: "user",
   state: (): UserState => ({
     user: null,
-    error: null
+    error: null,
   }),
   actions: {
     async login(email: string, password: string): Promise<void> {
-      console.log(email.value, password.value);
       try {
-        const response = await axiosInstance.post<{user: User}>("/login/", {
+        const response = await axiosInstance.post<{ user: User }>("/login/", {
           username: email.value,
           password: password.value,
         });
 
         const userData = response.data;
         this.user = userData.user;
+        localStorage.setItem("user", JSON.stringify(this.user));
         this.error = null;
       } catch (error: unknown) {
-       
-        console.log(error.message)
-        this.user = null
+        this.user = null;
       }
     },
-    
+
     logout(): void {
-      this.user = null
-      this.error = null
+      this.user = null;
+      this.error = null;
+      localStorage.removeItem("user");
+    },
+    setUser(user: any) {
+      this.user = user;
+
+      // if (user) {
+      //   axios.defaults.headers.common["Authorization"] = `Bearer ${user.token}`;
+      // } else {
+      //   delete axios.defaults.headers.common["Authorization"];
+      // }
+    },
+    checkUser() {
+      const user = localStorage.getItem("user");
+
+      if (user) {
+        this.setUser(JSON.parse(user));
+      }
     },
   },
 });

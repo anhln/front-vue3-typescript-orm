@@ -6,8 +6,20 @@
   </v-app>
 </template>
 
-<script setup lang="ts">
-  import Login from "@/components/user/Login.vue";
+<script lang="ts">
+  import { useUserStore } from "./store/user";
+  import { defineComponent, onMounted } from "vue";
+
+  export default defineComponent({
+    setup() {
+      const authStore = useUserStore();
+      onMounted(() => {
+        authStore.checkUser();
+      });
+
+      return {};
+    },
+  });
 </script>
 <style>
   .v-main {

@@ -44,10 +44,11 @@
   </v-container>
 </template>
 <script lang="ts">
-  import { defineComponent, ref } from "vue";
+  import { defineComponent, ref, onMounted } from "vue";
   import { useRouter } from "vue-router";
   import { useField, useForm } from "vee-validate";
   import { useUserStore } from "@/store/user";
+  import * as _ from "lodash";
 
   export default defineComponent({
     name: "LoginForm",
@@ -76,13 +77,19 @@
       };
 
       function login() {
-        router.push("/profile");
+        router.push("/");
       }
 
       const submit = handleSubmit(async () => {
-        const response = await userStore.login(username.value, password.value);
-        // if()router.push("/profile");
-        console.log(JSON.stringify(response));
+        try {
+          await userStore.login(username.value, password.value);
+          if (!_.isEmpty(userStore.user)) {
+            console.log("OK");
+            router.push("/profile");
+          }
+        } catch (error) {
+          console.log(JSON.stringify(error));
+        }
       });
 
       return {
@@ -157,10 +164,10 @@
     .user-name {
       min-width: 375px;
       margin-bottom: 12px;
-      &::v-deep .v-field__prepend-inner .v-icon {
+      &:deep .v-field__prepend-inner .v-icon {
         margin-right: 12px;
       }
-      &::v-deep .v-field__append-inner .v-icon {
+      &:deep .v-field__append-inner .v-icon {
         margin-left: 12px;
       }
     }
