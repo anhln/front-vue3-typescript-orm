@@ -9,6 +9,15 @@
           <div class="title">
             <h3>Log in to your account</h3>
           </div>
+          <v-alert
+            v-if="notification != null"
+            :text="notification.message"
+            :type="notification.type"
+            class="mb-6"
+            color="#f08080"
+            density="compact"
+            theme="dark"
+          ></v-alert>
           <v-text-field
             class="user-name"
             placeholder="User Name"
@@ -44,18 +53,28 @@
   </v-container>
 </template>
 <script lang="ts">
-  import { defineComponent, ref, onMounted } from "vue";
+  import { defineComponent, ref, computed } from "vue";
   import { useRouter } from "vue-router";
   import { useField, useForm } from "vee-validate";
   import { useUserStore } from "@/store/user";
   import * as _ from "lodash";
+  import { useNotificationStore, NotificationType } from "@/store/notification";
 
   export default defineComponent({
     name: "LoginForm",
     setup() {
       const userStore = useUserStore();
+      const notificationStore = useNotificationStore();
       const router = useRouter();
       const visiblePassword = ref(false);
+
+      const notification = computed(() => {
+        return notificationStore.notification;
+      });
+
+      const showNotification = (type: NotificationType, message: string) => {
+        notificationStore.set({ type, message });
+      };
 
       const { handleSubmit } = useForm({
         validationSchema: {
@@ -82,18 +101,18 @@
 
       const submit = handleSubmit(async () => {
         try {
-          await userStore.login(username.value, password.value);
+          const result = await userStore.login(username.value, password.value);
           if (!_.isEmpty(userStore.user)) {
-            console.log("OK");
-            router.push("/profile");
+            router.push("/");
           }
         } catch (error) {
-          console.log(JSON.stringify(error));
+          showNotification("error", error.message);
         }
       });
 
       return {
         visiblePassword,
+        notification,
         username,
         password,
         changeViewPassword,

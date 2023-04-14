@@ -1,14 +1,9 @@
 <template>
   <v-app>
-    <v-main>
-      <RouterView />
-    </v-main>
+    <component :is="this.$route.meta.layout || 'div'">
+      <RouterView></RouterView>
+    </component>
   </v-app>
 </template>
 
 <script setup lang="ts"></script>
-<style>
-  .v-main {
-    padding: 0px;
-  }
-</style>

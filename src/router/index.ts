@@ -1,31 +1,27 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { useUserStore } from "@/store/user";
+import DefaultLayout from "@/layouts/default/Default.vue";
+import LoginLayout from "@/layouts/default/LoginLayout.vue";
 
 const routes = [
   {
     path: "/",
-    component: () => import("@/layouts/default/Default.vue"),
-    children: [
-      {
-        path: "",
-        name: "Home",
-        component: () =>
-          import(/* webpackChunkName: "home" */ "@/views/Home.vue"),
-      },
-    ],
-    meta: { requiresAuth: true },
+    name: "Home",
+    component: () => import(/* webpackChunkName: "home" */ "@/views/Home.vue"),
+    meta: { requiresAuth: true, layout: DefaultLayout },
   },
   {
     path: "/profile",
     name: "Profile",
     component: () => import("@/components/user/Profile.vue"),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, layout: DefaultLayout },
   },
   {
     path: "/login",
     name: "Login",
     component: () =>
       import(/* webpackChunkName: "login" */ "@/components/user/Login.vue"),
+    meta: { layout: LoginLayout },
   },
 ];
 
@@ -44,7 +40,6 @@ router.beforeEach((to, from, next) => {
 
   if (to.meta.requiresAuth) {
     if (!userStore.user && !localStorage.getItem("user")) {
-      console.log("login requires");
       next("/login");
     } else {
       userStore.user = JSON.parse(localStorage.getItem("user"));
